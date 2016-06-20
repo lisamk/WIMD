@@ -21,7 +21,8 @@ public class ScanDataActivity extends LocationActivity {
 
     private int START_COMMAND;
     private int EXIT_COMMAND;
-    private int ROOM_COMMAND;
+    private int CHOOSE_COMMAND;
+    private int CLEAR_COMMAND;
 
     /* A map containing command ids and their names <command_id, command_name>*/
     private Map<Integer, String> commands;
@@ -34,6 +35,7 @@ public class ScanDataActivity extends LocationActivity {
     private boolean isScanning = false;
 
     AlertDialog noRoomSelectedDialog;
+    AlertDialog.Builder clearDatabase;
 
     @Override
     protected void setupContentView() {
@@ -43,7 +45,7 @@ public class ScanDataActivity extends LocationActivity {
     }
 
     private void setupDialogs(){
-        noRoomSelectedDialog = new AlertDialog.Builder(ScanDataActivity.this).create();
+        noRoomSelectedDialog = new AlertDialog.Builder(this).create();
         noRoomSelectedDialog.setTitle("Alert");
         noRoomSelectedDialog.setMessage("No location selected.\nPlease select a location to start scanning.");
         noRoomSelectedDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -53,6 +55,22 @@ public class ScanDataActivity extends LocationActivity {
                     }
                 }
         );
+
+        clearDatabase = new AlertDialog.Builder(this);
+        clearDatabase.setTitle("Confirm");
+        clearDatabase.setMessage("The whole database will be deleted, are you shure?");
+        clearDatabase.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                app.clearDatabase();
+                dialog.dismiss();
+            }
+        });
+        clearDatabase.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
     }
 
     public void onReceiveWifiScanResults(List<ScanResult> results) {
@@ -60,6 +78,8 @@ public class ScanDataActivity extends LocationActivity {
             String mac = "";
             int rssi = 0;
             for (ScanResult result : results) {
+                mac = result.BSSID;
+                rssi = result.level;
                 app.addLocation(new Location(selectedLocation, mac, rssi, System.currentTimeMillis()/1000));
             }
 
@@ -80,37 +100,43 @@ public class ScanDataActivity extends LocationActivity {
         }
     }
 
+    private void clearDatabase() {
+        clearDatabase.create().show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        commands = new HashMap<>();
+        commands = new HashMap<Integer, String>();
 
         int id = 0;
 
         START_COMMAND = id;
-        commands.put(id++, "Start Scanning");
+        commands.put(id++, "Scan");
+        CLEAR_COMMAND = id;
+        commands.put(id++, "Clear database");
         EXIT_COMMAND = id;
         commands.put(id++, "Exit");
-        ROOM_COMMAND = id;
-        commands.put(id++, "Choose Room");
+        CHOOSE_COMMAND = id;
+        commands.put(id++, "Choose Location");
         for (int place = 0; id < PLACES.length; place++, id++) {
             commands.put(id, PLACES[place]);
         }
 
         for (id = 0; id < commands.size(); id++) {
-            if (id == START_COMMAND || id == EXIT_COMMAND) {
+            if (id == START_COMMAND || id == EXIT_COMMAND || id == CLEAR_COMMAND) {
                 menu.add(Menu.NONE, id, Menu.NONE, commands.get(id));
-            } else if (id == ROOM_COMMAND) {
+            } else if (id == CHOOSE_COMMAND) {
                 rSubMenu = menu.addSubMenu(Menu.NONE, id, Menu.NONE, commands.get(id));
-            } else if (id == ROOM_COMMAND + 1){
+            } else if (id == CHOOSE_COMMAND + 1){
                 rSubMenu.add(Menu.NONE, id, Menu.NONE, commands.get(id));
-            } else if (id > ROOM_COMMAND) {
+            } else if (id > CHOOSE_COMMAND) {
                 rSubMenu.add(Menu.NONE, id, Menu.NONE, commands.get(id));
             }
         }
         super.onCreateOptionsMenu(menu);
 
         TextView selectedRoomView = (TextView) findViewById(R.id.selected_room_View);
-        selectedRoomView.setText(commands.get(ROOM_COMMAND + 1));
+        selectedRoomView.setText(commands.get(CHOOSE_COMMAND + 1));
 
         return true;
     }
@@ -123,7 +149,9 @@ public class ScanDataActivity extends LocationActivity {
             startScan();
         } else if (id == EXIT_COMMAND) {
             finish();
-        } else if (id > ROOM_COMMAND && id < commands.size()) {
+        } else if (id == CLEAR_COMMAND) {
+            clearDatabase();
+        } else if (id > CHOOSE_COMMAND && id < commands.size()) {
             TextView selectedRoomView = (TextView) findViewById(R.id.selected_room_View);
             selectedLocation = commands.get(id);
             selectedRoomView.setText(commands.get(id));

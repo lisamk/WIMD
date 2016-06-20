@@ -43,12 +43,6 @@ public class LocationDatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_DATA_TABLE = "CREATE TABLE " + TABLE_DATA + "("
-                + ID + " INTEGER PRIMARY KEY,"
-                + LOCATION + " TEXT,"
-                + MAC + " TEXT,"
-                + RSSI + " INTEGER,"
-                + TIMESTAMP + " INTEGER" + ")";
         db.execSQL(CREATE_DATA_TABLE);
     }
 
@@ -88,5 +82,10 @@ public class LocationDatabaseHandler extends SQLiteOpenHelper {
         db.close();
 
         return location;
+    }
+
+    public void clear() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        onUpgrade(db, DATABASE_VERSION, DATABASE_VERSION+1);
     }
 }

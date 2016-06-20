@@ -16,10 +16,15 @@ public class MainApp extends Application {
         super.onCreate();
 
         locationDatabaseHandler = new LocationDatabaseHandler(this);
+        new WIMDActivity();
     }
 
-    public String findRoom(String mac, int rssi){
+    public String findLocation(String mac, int rssi){
         return locationDatabaseHandler.getLocation(mac, rssi);
+    }
+
+    public void clearDatabase() {
+        locationDatabaseHandler.clear();
     }
 
     public void addLocation(Location location) {

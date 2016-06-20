@@ -32,21 +32,19 @@ public class WIMDActivity extends LocationActivity {
         startSearching();
     }
 
-    // TODO Raminta: review && document
     @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
         if (isActive && results!=null && results.size() > 0) {
-            Map<String, Integer> m = new HashMap<>();
-            for (ScanResult result : results) {
-                m.put(result.BSSID, result.level);
+            String location = "Unkown";
+            for (ScanResult scanResult : results) {
+                String mac = scanResult.BSSID;
+                int rssi = scanResult.level;
+
+                String result = app.findLocation(mac, rssi);
+                location = (result!=null) ? result : location;
             }
 
-
-//TODO mac + rssi erhalten
-            String mac = "";
-            int rssi = 0;
-
-            setMyLocation(app.findRoom(mac, rssi));
+            setMyLocation(location);
         }
     }
 
