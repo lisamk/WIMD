@@ -16,7 +16,6 @@ public class MainApp extends Application {
         super.onCreate();
 
         locationDatabaseHandler = new LocationDatabaseHandler(this);
-        new WIMDActivity();
     }
 
     public String findLocation(String mac, int rssi){

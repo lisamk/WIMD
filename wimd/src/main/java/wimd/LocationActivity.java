@@ -29,11 +29,12 @@ public abstract class LocationActivity extends Activity {
             "Hoersaaltrakt", "Physikgebaeude", "Juridicum", "ManagementGebaude", "Bankgebaeude"};
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         app = (MainApp) getApplication();
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         if(!wifi.isWifiEnabled()) wifi.setWifiEnabled(true);
+        wifi.startScan();
         setupContentView();
     }
 

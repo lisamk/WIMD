@@ -50,22 +50,27 @@ public class Client implements ClientInterface {
     }
 
     public void handle() {
-        try {
-            Socket socket = new Socket(IP, 4031);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket socket = new Socket(IP, 4031);
+                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    out = new PrintWriter(socket.getOutputStream(), true);
 
-            String data = "Mensa" + SEPARATOR + myTimestamp + SEPARATOR + mac;
-            out.println(data);
+                    String data = myLocation + SEPARATOR + myTimestamp + SEPARATOR + mac;
+                    out.println(data);
 
-            String line = in.readLine();
-            if(line!=null) {
-                String[] fields = line.split(SEPARATOR);
-                location = fields[0];
-                timestamp = Integer.parseInt(fields[1]);
+                    String line = in.readLine();
+                    if(line!=null) {
+                        String[] fields = line.split(SEPARATOR);
+                        location = fields[0];
+                        timestamp = Integer.parseInt(fields[1]);
+                    }
+                } catch (IOException e) {
+                    return;
+                }
             }
-        } catch (IOException e) {
-            return;
-        }
+        }).start();
     }
 }

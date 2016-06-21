@@ -92,8 +92,8 @@
     <orderEntry type="library" exported="" name="hawtbuf-1.10" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
-    <orderEntry type="library" exported="" name="hawtdispatch-transport-1.21" level="project" />
     <orderEntry type="library" exported="" name="hawtdispatch-1.21" level="project" />
+    <orderEntry type="library" exported="" name="hawtdispatch-transport-1.21" level="project" />
     <orderEntry type="library" exported="" name="usb-android-23" level="project" />
     <orderEntry type="library" exported="" name="effects-android-23" level="project" />
     <orderEntry type="library" exported="" name="maps-android-23" level="project" />

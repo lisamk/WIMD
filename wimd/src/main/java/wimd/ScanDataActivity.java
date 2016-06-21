@@ -90,9 +90,9 @@ public class ScanDataActivity extends LocationActivity {
         if(selectedLocation.equals(PLACES[0])) {
             noRoomSelectedDialog.show();
         } else {
+            wifi.startScan();
             pDialog = ProgressDialog.show(this, "", SCANNING, true);
             isScanning = true;
-            wifi.startScan();
         }
     }
 

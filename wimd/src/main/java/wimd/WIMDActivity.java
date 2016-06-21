@@ -27,15 +27,15 @@ public class WIMDActivity extends LocationActivity {
         myLocationView = (TextView) findViewById(R.id.myLocation);
         tv = (TextView) findViewById(R.id.tvTextView);
         client = new Client(this);
-        setMyLocation(PLACES[1]);
-        wifi.startScan();
-        startSearching();
+        startScanningThread();
     }
 
     @Override
     public void onReceiveWifiScanResults(List<ScanResult> results) {
         if (isActive && results!=null && results.size() > 0) {
-            String location = "Unkown";
+            myLocation = null;
+
+            String location = "Unknown location";
             for (ScanResult scanResult : results) {
                 String mac = scanResult.BSSID;
                 int rssi = scanResult.level;
@@ -45,33 +45,25 @@ public class WIMDActivity extends LocationActivity {
             }
 
             setMyLocation(location);
+            isActive = false;
         }
     }
 
     public void startSearching() {
-        new Thread() {
+        runOnUiThread(new Runnable() {
             public void run() {
-                while(isActive) {
-                    try {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv.setText(client.getLocation());
-                            }
-                        });
-                        Thread.sleep(WAIT_TIME);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                tv.setText(client.getLocation());
             }
-        }.start();
+        });
     }
 
     private void setMyLocation(final String room) {
         myLocation = room;
-        myLocationView.setText(myLocation);
-        client.setLocation(myLocation);
+        runOnUiThread(new Runnable() {
+            public void run() {
+                myLocationView.setText(myLocation);
+            }
+        });
     }
 
     @Override
@@ -95,6 +87,24 @@ public class WIMDActivity extends LocationActivity {
         } else {
             return super.onOptionsItemSelected(item);
         }
+        startScanningThread();
         return true;
+    }
+
+    public void startScanningThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(isActive) {
+                    wifi.startScan();
+                    startSearching();
+                    try {
+                        Thread.sleep(WAIT_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 }
