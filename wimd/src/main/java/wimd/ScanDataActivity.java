@@ -75,12 +75,8 @@ public class ScanDataActivity extends LocationActivity {
 
     public void onReceiveWifiScanResults(List<ScanResult> results) {
         if (isScanning && !selectedLocation.equals(PLACES[0])) {
-            String mac = "";
-            int rssi = 0;
             for (ScanResult result : results) {
-                mac = result.BSSID;
-                rssi = result.level;
-                app.addLocation(new Location(selectedLocation, mac, rssi, System.currentTimeMillis()/1000));
+                app.addLocation(new Location(selectedLocation, result.BSSID, result.level, System.currentTimeMillis()/1000));
             }
 
             pDialog.dismiss();
@@ -112,10 +108,10 @@ public class ScanDataActivity extends LocationActivity {
 
         START_COMMAND = id;
         commands.put(id++, "Scan");
-        CLEAR_COMMAND = id;
-        commands.put(id++, "Clear database");
         EXIT_COMMAND = id;
         commands.put(id++, "Exit");
+        CLEAR_COMMAND = id;
+        commands.put(id++, "Clear database");
         CHOOSE_COMMAND = id;
         commands.put(id++, "Choose Location");
         for (int place = 0; id < PLACES.length; place++, id++) {

@@ -54,6 +54,8 @@ public class LocationDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void addLocation(Location location) {
+        if(getLocation(location.getMac(), location.getRSSI())!=null) return; //nothing to add
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues locationValues = new ContentValues();
